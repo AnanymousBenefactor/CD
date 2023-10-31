@@ -1,0 +1,50 @@
+ibtea dangling else qn
+%{
+#include<stdio.h>
+#include<string.h>
+#include "y.tab.h"
+extern int yylval;
+%}
+
+%%
+"i" { return IF; }
+"e" { return ELSE; }
+"t" { return THEN; }
+[\t] ;
+[\n] return 0;
+. return yytext[0];
+%%
+
+yacc
+%{
+#include<stdio.h>
+#include<stdlib.h>
+int yyerror();
+int yylex();
+%}
+
+%token IF
+%token THEN
+%token ELSE
+
+%%
+
+S: Stmt { printf("Valid if construct according to dangling if-else grammar\n"); };
+
+Stmt: IF Expr THEN Stmt | IF Expr THEN Stmt ELSE Stmt | 'a';
+
+Expr: 'b';
+
+%%
+
+int yyerror(char *msg) {
+    printf("yyerror: %s (Not a valid if construct according to dangling if-else grammar)\n", msg);
+    return 0;
+}
+
+void main() {
+    printf("Enter your input:\n");
+    yyparse();
+}
+
+int yywrap() {}
